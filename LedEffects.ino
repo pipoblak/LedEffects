@@ -13,8 +13,8 @@ Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(NUM_LEDS2, PIN2, NEO_GRB + NEO_KHZ8
 
 boolean ida=true;
 int i=1;
-int ID=0,DELAY=10;
-int EventID1=0,EventID2=0;
+int ID=0;
+int EventID1=0,EventID2=0,DELAY1=0,DELAY2=0;
 ThreadController controll = ThreadController();
 Thread threadRead = Thread();
 Thread threadLight = Thread();
@@ -94,20 +94,25 @@ if (Serial.available() > 0) {
        idStrip.concat(char_array[cont]);
        }
      ID=idEvent.toInt();
-     DELAY=Speed.toInt();
+     
      int idStri = idStrip.toInt();
      
      if (idStri == 1){
       EventID1=ID;
+      DELAY1=Speed.toInt();
      }
      else if (idStri == 2){
       EventID2=ID;
+      DELAY2=Speed.toInt();
+      
      }
      else if (idStri == 0){
       EventID1=ID;
       EventID2=ID;
       contTempo1=0;
       contTempo2=0;
+      DELAY1=Speed.toInt();
+      DELAY2=Speed.toInt();
       }
 
    // Serial.print("\nEvento "); Serial.print(ID);     Serial.print(" Speed ");     Serial.print(DELAY);       Serial.print(" Strip ");  Serial.print(idStri);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
@@ -122,14 +127,14 @@ if (Serial.available() > 0) {
 void lightCallback(){
 
   if(EventID1==0){
-    rainbowCycleS(DELAY,1);
+    rainbowCycleS(DELAY1,1);
   }
   else if(EventID1==1){
     
   }
 
   if(EventID2==0){
-    rainbowCycleS(DELAY,2);
+    rainbowCycleS(DELAY2,2);
   }
   else if(EventID1==1){
     
