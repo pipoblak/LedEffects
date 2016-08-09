@@ -11,7 +11,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800)
 
 Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(NUM_LEDS2, PIN2, NEO_GRB + NEO_KHZ800);
 
-boolean ida=true;
+boolean ida1=true,ida2=true;
 int i=1;
 int ID=0;
 int EventID1=0,EventID2=0,DELAY1=0,DELAY2=0;
@@ -104,7 +104,6 @@ if (Serial.available() > 0) {
      else if (idStri == 2){
       EventID2=ID;
       DELAY2=Speed.toInt();
-      
      }
      else if (idStri == 0){
       EventID1=ID;
@@ -127,17 +126,17 @@ if (Serial.available() > 0) {
 void lightCallback(){
 
   if(EventID1==0){
-    rainbowCycleS(DELAY1,1);
+   rainbowCycleS(DELAY1,1);
   }
   else if(EventID1==1){
-    
+    doARun(DELAY1,1);
   }
 
   if(EventID2==0){
     rainbowCycleS(DELAY2,2);
   }
   else if(EventID1==1){
-    
+    doARun(DELAY2,2);
   }
 
 
@@ -217,37 +216,14 @@ void setAll(byte red, byte green, byte blue,int stripID) {
   showStrip(stripID);
 }
 
-void doARun(int d,int stripID){
+//STATICCOLOR
 
-  if(ida==true){
-        setPixel(i,255,255,255,stripID);
-        setPixel(i-1,0,0,0,stripID);
-        showStrip(stripID);
-    if(i==NUM_LEDS){
-      ida=false;
-      i=i-1;}
-    else{ 
-            i=i+1;
-    }
-        
-  }
-   else{
-        setPixel(i,255,255,255,stripID);
-        setPixel(i+1,0,0,0,stripID);
-        showStrip(stripID);
-        i=i-1;
-        if (i==0){
-            ida=true;
-            setAll(0,0,0,stripID);
-            i=i+1;
-        }
-    
-    
-    }    
-       
+void staticColor(int r,int g, int b){
+  setAll(r,g,b
   
   }
 
+//RAINBOW
 void rainbowCycleS(int SpeedDelay,int stripID) {
   byte *c;
   int contTempo;
