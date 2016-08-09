@@ -4,17 +4,24 @@
 #define PIN 0
 #define NUM_LEDS 8
 
+#define PIN 2
+#define NUM_LEDS2 10
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+
+Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+
 boolean ida=true;
 int i=1;
 int ID=0,DELAY=0;
+int EventID1=0,EventID2=0;
 ThreadController controll = ThreadController();
 Thread threadRead = Thread();
 Thread threadLight = Thread();
 ThreadController groupOfThreads = ThreadController();
 uint16_t contI = 0, contJ = 0;
 String Red,Green,Blue,Speed="10";
-int contTempo=0;
+int contTempo1=0,contTempo2=0;
 
 void readCallback(){
 
@@ -60,23 +67,41 @@ if (Serial.available() > 0) {
     }
 
     //LEITURA DE EVENTO
+
+    // @(ID_EVENTO)D(DELAY)S(STRIP)
     if(recivedDataStr.indexOf("@")>=0){
-     int indexS = recivedDataStr.indexOf("S");
+     int indexD = recivedDataStr.indexOf("D");
      int indexId = recivedDataStr.indexOf("@");
+     int indexS = recivedDataStr.indexOf("S");
      int indexSize = recivedDataStr.length();
      int str_len = recivedDataStr.length() + 1; 
      char char_array[str_len];
      recivedDataStr.toCharArray(char_array, str_len);
      Speed="0";
-     String idEvent="";
-     for(int cont=indexId+1;cont<indexS+1;cont++){
+     String idEvent="",idStrip="";
+     
+     for(int cont=indexId+1;cont<indexD+1;cont++){
        idEvent.concat(char_array[cont]);
        }
-     for(int cont=indexS+1;cont<indexSize+1;cont++){
+     
+     for(int cont=indexD+1;cont<indexS+1;cont++){
        Speed.concat(char_array[cont]);
+       }
+     for(int cont=indexS+1;cont<indexSize+1;cont++){
+       idStrip.concat(char_array[cont]);
        }
      ID=idEvent.toInt();
      DELAY=Speed.toInt();
+     if (idStrip.toInt()==1){
+      EventID1=idEvent.toInt();
+     }
+     if (idStrip.toInt()==2){
+      EventID2=idEvent.toInt();
+     }
+     if (idStrip.toInt()==0){
+      EventID1=idEvent.toInt();
+      EventID2=idEvent.toInt();
+     }
  
      }
 
@@ -87,14 +112,21 @@ if (Serial.available() > 0) {
 }
 
 void lightCallback(){
-    
-  if(ID==0){
-    rainbowCycleS(DELAY);
+
+  if(EventID1==0){
+    rainbowCycleS(DELAY,1);
   }
-  else if(ID==1){
+  else if(EventID1==1){
     
   }
-  
+
+  if(EventID2==0){
+    rainbowCycleS(DELAY,2);
+  }
+  else if(EventID1==1){
+    
+  }
+
 
 }
 
@@ -126,10 +158,16 @@ controll.run();
 }
 
 
-void showStrip() {
+void showStrip(int stripID) {
  #ifdef ADAFRUIT_NEOPIXEL_H 
    // NeoPixel
-   strip.show();
+  if(stripID==1){
+    strip.show(); 
+    }
+  else if (stripID==2){
+    strip2.show();
+    }
+   
  #endif
  #ifndef ADAFRUIT_NEOPIXEL_H
    // FastLED
@@ -137,10 +175,17 @@ void showStrip() {
  #endif
 }
 
-void setPixel(int Pixel, byte red, byte green, byte blue) {
+void setPixel(int Pixel, byte red, byte green, byte blue,int stripID) {
  #ifdef ADAFRUIT_NEOPIXEL_H 
    // NeoPixel
-   strip.setPixelColor(Pixel, strip.Color(red, green, blue));
+    if(stripID==1){
+     strip.setPixelColor(Pixel, strip.Color(red, green, blue));
+    }
+  else if (stripID==2){
+     strip2.setPixelColor(Pixel, strip2.Color(red, green, blue));
+    }
+   
+  
  #endif
  #ifndef ADAFRUIT_NEOPIXEL_H 
    // FastLED
@@ -150,16 +195,16 @@ void setPixel(int Pixel, byte red, byte green, byte blue) {
  #endif
 }
 
-void setAll(byte red, byte green, byte blue) {
+void setAll(byte red, byte green, byte blue,int stripID) {
+  
   for(int i = 0; i < NUM_LEDS; i++ ) {
-    setPixel(i, red, green, blue); 
+    setPixel(i, red, green, blue,stripID); 
   }
-  showStrip();
+  showStrip(stripID);
 }
 
-void doARun(int d){
+void doARun(int d,int stripID){
 
-    delay(d);
   if(ida==true){
         setPixel(i,255,255,255);
         setPixel(i-1,0,0,0);
@@ -189,20 +234,36 @@ void doARun(int d){
   
   }
 
-void rainbowCycleS(int SpeedDelay) {
+void rainbowCycleS(int SpeedDelay,int stripID) {
   byte *c;
-    contTempo++;
+  int contTempo;
+  int numberLeds;
+  if(stripID==1){
+    contTempo=contTempo1;
+    numberLeds=NUM_LEDS;
+    }
+  if(stripID==2){
+    contTempo=contTempo2;
+    numberLeds=NUM_LEDS2;
+    }
+    
    if (contTempo >= SpeedDelay){
     
-    for(i=0; i< NUM_LEDS; i++) {
-      c=Wheel(((i * 256 / NUM_LEDS) + contJ) & 255);
+    for(i=0; i< numberLeds; i++) {
+      c=Wheel(((i * 256 / numberLeds) + contJ) & 255);
       setPixel(i, *c, *(c+1), *(c+2));
   
     }
    
-     contTempo=0;
-      contJ++;
-      showStrip();
+    contTempo=0;
+    if(stripID==1){
+      contTempo1=contTempo;
+    }
+    if(stripID==2){
+      contTempo2=contTempo;
+    }
+    contJ++;
+    showStrip();
   }
 
 } 
