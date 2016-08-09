@@ -206,9 +206,9 @@ void setAll(byte red, byte green, byte blue,int stripID) {
 void doARun(int d,int stripID){
 
   if(ida==true){
-        setPixel(i,255,255,255);
-        setPixel(i-1,0,0,0);
-        showStrip();
+        setPixel(i,255,255,255,stripID);
+        setPixel(i-1,0,0,0,stripID);
+        showStrip(stripID);
     if(i==NUM_LEDS){
       ida=false;
       i=i-1;}
@@ -219,8 +219,8 @@ void doARun(int d,int stripID){
   }
    else{
         setPixel(i,255,255,255);
-        setPixel(i+1,0,0,0);
-        showStrip();
+        setPixel(i+1,0,0,0,stripID);
+        showStrip(stripID);
         i=i-1;
         if (i==0){
             ida=true;
@@ -251,7 +251,7 @@ void rainbowCycleS(int SpeedDelay,int stripID) {
     
     for(i=0; i< numberLeds; i++) {
       c=Wheel(((i * 256 / numberLeds) + contJ) & 255);
-      setPixel(i, *c, *(c+1), *(c+2));
+      setPixel(i, *c, *(c+1), *(c+2),stripID);
   
     }
    
@@ -263,7 +263,7 @@ void rainbowCycleS(int SpeedDelay,int stripID) {
       contTempo2=contTempo;
     }
     contJ++;
-    showStrip();
+    showStrip(stripID);
   }
 
 } 
