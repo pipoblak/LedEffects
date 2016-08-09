@@ -77,7 +77,7 @@ if (Serial.available() > 0) {
        }
      ID=idEvent.toInt();
      DELAY=Speed.toInt();
-     Serial.println(DELAY);
+ 
      }
 
 
@@ -122,18 +122,9 @@ void setup() {
 // *** REPLACE FROM HERE ***
 void loop() { 
 controll.run();
- //rainbowCycle(20);
-
-        
- // ---> here we call the effect function <---
-//doARun(20);
-//NewKITT(0xff, 0, 0, 2, 10, 50);
-//Fire(55,120,15);
 
 }
 
-// ---> here we define the effect function <---
-// *** REPLACE TO HERE ***
 
 void showStrip() {
  #ifdef ADAFRUIT_NEOPIXEL_H 
