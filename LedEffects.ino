@@ -13,7 +13,7 @@ Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(NUM_LEDS2, PIN2, NEO_GRB + NEO_KHZ8
 
 boolean ida=true;
 int i=1;
-int ID=0,DELAY=0;
+int ID=0,DELAY=10;
 int EventID1=0,EventID2=0;
 ThreadController controll = ThreadController();
 Thread threadRead = Thread();
@@ -70,6 +70,8 @@ if (Serial.available() > 0) {
 
     // @(ID_EVENTO)D(DELAY)S(STRIP)
     if(recivedDataStr.indexOf("@")>=0){
+    //  Serial.print("\nSpeed ");     Serial.print(DELAY);       Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
+
      int indexId = recivedDataStr.indexOf("@");
      int indexD = recivedDataStr.indexOf("D");
      int indexS = recivedDataStr.indexOf("S");
@@ -87,23 +89,28 @@ if (Serial.available() > 0) {
      for(int cont=indexD+1;cont<indexS;cont++){
        Speed.concat(char_array[cont]);
        }
+       
      for(int cont=indexS+1;cont<indexSize+1;cont++){
        idStrip.concat(char_array[cont]);
        }
      ID=idEvent.toInt();
      DELAY=Speed.toInt();
+     int idStri = idStrip.toInt();
      
-     if (idStrip == "1"){
-      EventID1=idEvent.toInt();
+     if (idStri == 1){
+      EventID1=ID;
      }
-     else if (idStrip == "2"){
-      EventID2=idEvent.toInt();
+     else if (idStri == 2){
+      EventID2=ID;
      }
-     else if (idStrip == "0"){
-      EventID1=idEvent.toInt();
-      EventID2=idEvent.toInt();
-     }
-    Serial.print(idEvent);     Serial.print(" Speed ");     Serial.print(Speed);       Serial.print(" Strip ");  Serial.print(idStrip);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
+     else if (idStri == 0){
+      EventID1=ID;
+      EventID2=ID;
+      contTempo1=0;
+      contTempo2=0;
+      }
+
+   // Serial.print("\nEvento "); Serial.print(ID);     Serial.print(" Speed ");     Serial.print(DELAY);       Serial.print(" Strip ");  Serial.print(idStri);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
      }
 
 
@@ -241,19 +248,22 @@ void rainbowCycleS(int SpeedDelay,int stripID) {
   int contTempo;
   int numberLeds;
   int cont;
+  
   if(stripID==1){
     contTempo=contTempo1;
+    contTempo1++;
     numberLeds=NUM_LEDS;
     cont=contJ1;
     }
   if(stripID==2){
     contTempo=contTempo2;
+    contTempo2++;
     numberLeds=NUM_LEDS2;
     cont=contJ2;
     }
     
    if (contTempo >= SpeedDelay){
-    
+
     for(i=0; i< numberLeds; i++) {
       c=Wheel(((i * 256 / numberLeds) + cont) & 255);
       setPixel(i, *c, *(c+1), *(c+2),stripID);
@@ -272,6 +282,7 @@ void rainbowCycleS(int SpeedDelay,int stripID) {
     
     showStrip(stripID);
   }
+  
 
 } 
  
