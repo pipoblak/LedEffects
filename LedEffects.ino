@@ -7,13 +7,14 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 boolean ida=true;
 int i=1;
-int ID=0,DELAY=10;
+int ID=0,DELAY=0;
 ThreadController controll = ThreadController();
 Thread threadRead = Thread();
 Thread threadLight = Thread();
 ThreadController groupOfThreads = ThreadController();
 uint16_t contI = 0, contJ = 0;
-String Red,Green,Blue;
+String Red,Green,Blue,Speed="10";
+int contTempo=0;
 
 void readCallback(){
 
@@ -57,6 +58,28 @@ if (Serial.available() > 0) {
        Blue.concat(char_array[cont]);
        }
     }
+
+    //LEITURA DE EVENTO
+    if(recivedDataStr.indexOf("@")>=0){
+     int indexS = recivedDataStr.indexOf("S");
+     int indexId = recivedDataStr.indexOf("@");
+     int indexSize = recivedDataStr.length();
+     int str_len = recivedDataStr.length() + 1; 
+     char char_array[str_len];
+     recivedDataStr.toCharArray(char_array, str_len);
+     Speed="0";
+     String idEvent="";
+     for(int cont=indexId+1;cont<indexS+1;cont++){
+       idEvent.concat(char_array[cont]);
+       }
+     for(int cont=indexS+1;cont<indexSize+1;cont++){
+       Speed.concat(char_array[cont]);
+       }
+     ID=idEvent.toInt();
+     DELAY=Speed.toInt();
+     Serial.println(DELAY);
+     }
+
 
   //ESPAÇO PARA UM OUTRO EVENTO
     
@@ -259,18 +282,19 @@ contI++;
 
 void rainbowCycleS(int SpeedDelay) {
   byte *c;
-  
-unsigned long currentMillis = millis();
-   
-   for(i=0; i< NUM_LEDS; i++) {
+    contTempo++;
+   if (contTempo >= SpeedDelay){
+    
+    for(i=0; i< NUM_LEDS; i++) {
       c=Wheel(((i * 256 / NUM_LEDS) + contJ) & 255);
       setPixel(i, *c, *(c+1), *(c+2));
   
     }
-    if (currentMillis <= (currentMillis + SpeedDelay)){
+   
+     contTempo=0;
       contJ++;
       showStrip();
-      }
+  }
 
 } 
  
