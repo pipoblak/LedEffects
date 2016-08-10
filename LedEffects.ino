@@ -176,7 +176,7 @@ if (Serial.available() > 0) {
       DELAY2=Speed.toInt();
       }
     
-   // Serial.print("\nEvento "); Serial.print(ID);     Serial.print(" Speed ");     Serial.print(DELAY);       Serial.print(" Strip ");  Serial.print(idStri);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
+//   Serial.print("\nEvento "); Serial.print(ID);     Serial.print(" Speed ");     Serial.print(DELAY);       Serial.print(" Strip ");  Serial.print(idStri);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
      }
 
 
@@ -198,7 +198,7 @@ void lightCallback(){
   }
   else if(EventID1==2){
     disableStatic(1);
-    FadeInOut(Red1.toInt(),Green1.toInt(),Blue1.toInt(),DELAY1,1);
+    FadeInOut(Red1.toInt(),Green1.toInt(),Blue1.toInt(),10,1);
   }
   
 //FITA 2
@@ -213,7 +213,7 @@ void lightCallback(){
   }
  else if(EventID2==2){
     disableStatic(2);
-    FadeInOut(Red2.toInt(),Green2.toInt(),Blue2.toInt(),DELAY2,2);
+    FadeInOut(Red2.toInt(),Green2.toInt(),Blue2.toInt(),10,2);
   }
 
 }
