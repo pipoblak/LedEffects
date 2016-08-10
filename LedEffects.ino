@@ -156,11 +156,13 @@ if (Serial.available() > 0) {
      if (idStri == 1){
       EventID1=ID;
       contTempo1=0;
+      contJ1=0;
       DELAY1=Speed.toInt();
      }
      else if (idStri == 2){
       EventID2=ID;
       contTempo2=0;
+      contJ2=0;
       DELAY2=Speed.toInt();
      }
      else if (idStri == 0){
@@ -168,6 +170,8 @@ if (Serial.available() > 0) {
       EventID2=ID;
       contTempo1=0;
       contTempo2=0;
+      contJ1=0;
+      contJ2=0;
       DELAY1=Speed.toInt();
       DELAY2=Speed.toInt();
       }
@@ -192,17 +196,25 @@ void lightCallback(){
     setStatic(1);
     staticColorEffect(Red1.toInt(),Green1.toInt(),Blue1.toInt(),1);
   }
+  else if(EventID1==2){
+    disableStatic(1);
+    FadeInOut(Red1.toInt(),Green1.toInt(),Blue1.toInt(),DELAY1,1);
+  }
   
 //FITA 2
   if(EventID2==0){
     disableStatic(2);
     rainbowCycleS(DELAY2,2);
+    
   }
   else if(EventID2==1){
     setStatic(2);
     staticColorEffect(Red2.toInt(),Green2.toInt(),Blue2.toInt(),2);
   }
-
+ else if(EventID2==2){
+    disableStatic(2);
+    FadeInOut(Red2.toInt(),Green2.toInt(),Blue2.toInt(),DELAY2,2);
+  }
 
 }
 
@@ -260,7 +272,7 @@ void setup() {
   threadRead.setInterval(1);
 
   threadLight.onRun(lightCallback);
-  threadLight.setInterval(5);
+  threadLight.setInterval(1);
   
   controll.add(&threadRead);
   
@@ -411,4 +423,69 @@ byte * Wheel(byte WheelPos) {
   }
 
   return c;
+}
+
+//EFEITO PULSE
+void FadeInOut(byte red, byte green, byte blue,int SpeedDelay,int stripID){
+  float r, g, b;
+  boolean verif;
+  int cont,contTempo;
+
+  if(stripID==1){
+    cont=contJ1;
+    verif=ida1;
+    contTempo=contTempo1;
+    contTempo1++;
+    }
+  else if (stripID==2){
+    cont=contJ2;
+    verif=ida2;
+    contTempo=contTempo2;
+    contTempo2++;
+    }
+  if (contTempo >= SpeedDelay){
+    if (verif==true){
+      if(cont<256){
+        r = (cont/256.0)*red;
+        g = (cont/256.0)*green;
+        b = (cont/256.0)*blue;
+        setAll(r,g,b,stripID);
+        showStrip(stripID);
+        if(cont==255){
+          verif=false;
+          }
+        else{
+           cont++;
+          }
+        }
+    }
+    else{
+      r = (cont/256.0)*red;
+      g = (cont/256.0)*green;
+      b = (cont/256.0)*blue;
+      setAll(r,g,b,stripID);
+      showStrip(stripID);
+      if(cont==0){
+        verif=true;
+        }
+      else{
+          cont--;
+        }
+    }
+    contTempo=0;
+   if(stripID==1){
+    contTempo1=contTempo;
+    contJ1=cont;
+    ida1=verif;
+    }
+  else if (stripID==2){
+    contTempo2=contTempo;
+    contJ2=cont;
+    ida2=verif;
+    }
+    
+  }
+
+     
+
 }
