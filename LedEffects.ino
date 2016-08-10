@@ -20,8 +20,9 @@ Thread threadRead = Thread();
 Thread threadLight = Thread();
 ThreadController groupOfThreads = ThreadController();
 uint16_t contJ1 = 0, contJ2 = 0;
-String Red,Green,Blue,Speed="10";
+String Red="0",Green="0",Blue="0",Speed="10";
 int contTempo1=0,contTempo2=0;
+boolean staticColor=false,staticColor2=false;
 
 void readCallback(){
 
@@ -124,25 +125,74 @@ if (Serial.available() > 0) {
 }
 
 void lightCallback(){
-
+//FITA 1
   if(EventID1==0){
+   disableStatic(1);
    rainbowCycleS(DELAY1,1);
+   
   }
   else if(EventID1==1){
-    doARun(DELAY1,1);
+    setStatic(1);
+    staticColorEffect(Red.toInt(),Green.toInt(),Blue.toInt(),1);
   }
-
+  
+//FITA 2
   if(EventID2==0){
+    disableStatic(2);
     rainbowCycleS(DELAY2,2);
   }
   else if(EventID1==1){
-    doARun(DELAY2,2);
+    setStatic(2);
+    staticColorEffect(Red.toInt(),Green.toInt(),Blue.toInt(),2);
   }
 
 
 }
 
+void setStatic(int stripID){
+  if(stripID==1){
+  
+  if(staticColor==true){
+    
+    }
+  else{
+    staticColor=true;
+    }
+  
+  }
+  
+  else if (stripID==2){
+   if(staticColor2==true){
+    
+    }
+   else{
+    staticColor2=true;
+    }
+    }
+    
+  }
 
+void disableStatic(int stripID){
+
+  if(stripID==1){
+    if(staticColor==true){
+      staticColor=false;
+    }
+    else{
+   
+    }
+  }
+  else if (stripID==2){
+      if(staticColor2==true){
+      staticColor2=false;
+    }
+    else{
+   
+    }
+    }
+}
+  
+  
 void setup() {
   Serial.begin(115200);
   strip.begin();
@@ -218,10 +268,18 @@ void setAll(byte red, byte green, byte blue,int stripID) {
 
 //STATICCOLOR
 
-void staticColor(int r,int g, int b){
-  setAll(r,g,b
+void staticColorEffect(int r,int g, int b,int stripID){
+  if(stripID==1){
+    if(staticColor==true)
+  setAll(r,g,b,stripID);
+    }
+  else if(stripID==2){
+    if(staticColor2==true)
+  setAll(r,g,b,stripID);
+    }
   
-  }
+  
+}
 
 //RAINBOW
 void rainbowCycleS(int SpeedDelay,int stripID) {
