@@ -2,11 +2,9 @@
 #include <Thread.h>
 #include <ThreadController.h>
 #define PIN 0
-#define NUM_LEDS 8
-
+#define NUM_LEDS 35
 #define PIN2 2
-#define NUM_LEDS2 10
-
+#define NUM_LEDS2 50
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
 Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(NUM_LEDS2, PIN2, NEO_GRB + NEO_KHZ800);
@@ -20,9 +18,9 @@ Thread threadRead = Thread();
 Thread threadLight = Thread();
 ThreadController groupOfThreads = ThreadController();
 uint16_t contJ1 = 0, contJ2 = 0;
-String Red1="0",Green1="0",Blue1="0",Red2="0",Green2="0",Blue2="0",Speed="10";
+String Red1="255",Green1="255",Blue1="255",Red2="255",Green2="255",Blue2="255",Speed="0";
 int contTempo1=0,contTempo2=0;
-boolean staticColor=false,staticColor2=false;
+
 
 void readCallback(){
 
@@ -42,6 +40,7 @@ if (Serial.available() > 0) {
   //É UM DISPOSITIVO COLOREYEZE?
     if(recivedDataStr.indexOf("$")>=0){
       Serial.println("Coloreyeze Device PC");
+      
     }
     
   //LEITURA RGB
@@ -117,8 +116,8 @@ if (Serial.available() > 0) {
        }
 
      }
-     
-     
+
+     delay(100);
   
     }
 
@@ -175,8 +174,8 @@ if (Serial.available() > 0) {
       DELAY1=Speed.toInt();
       DELAY2=Speed.toInt();
       }
-    
-//   Serial.print("\nEvento "); Serial.print(ID);     Serial.print(" Speed ");     Serial.print(DELAY);       Serial.print(" Strip ");  Serial.print(idStri);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
+    delay(10);
+//Serial.print("\nEvento "); Serial.print(ID);     Serial.print(" Speed1 ");     Serial.print(DELAY1);  Serial.print(" Speed2 ");     Serial.print(DELAY2);       Serial.print(" Strip ");  Serial.print(idStri);     Serial.print(" EventID1 ");     Serial.print(EventID1);     Serial.print(" EventID2 ");     Serial.print(EventID2);
      }
 
 
@@ -188,79 +187,35 @@ if (Serial.available() > 0) {
 void lightCallback(){
 //FITA 1
   if(EventID1==0){
-   disableStatic(1);
+
    rainbowCycleS(DELAY1,1);
    
   }
   else if(EventID1==1){
-    setStatic(1);
+
     staticColorEffect(Red1.toInt(),Green1.toInt(),Blue1.toInt(),1);
   }
   else if(EventID1==2){
-    disableStatic(1);
+
     FadeInOut(Red1.toInt(),Green1.toInt(),Blue1.toInt(),10,1);
   }
   
 //FITA 2
   if(EventID2==0){
-    disableStatic(2);
+
     rainbowCycleS(DELAY2,2);
     
   }
   else if(EventID2==1){
-    setStatic(2);
+
     staticColorEffect(Red2.toInt(),Green2.toInt(),Blue2.toInt(),2);
   }
  else if(EventID2==2){
-    disableStatic(2);
+
     FadeInOut(Red2.toInt(),Green2.toInt(),Blue2.toInt(),10,2);
   }
 
 }
-
-void setStatic(int stripID){
-  if(stripID==1){
-  
-  if(staticColor==true){
-    
-    }
-  else{
-    staticColor=true;
-    }
-  
-  }
-  
-  else if (stripID==2){
-   if(staticColor2==true){
-    
-    }
-   else{
-    staticColor2=true;
-    }
-    }
-    
-  }
-
-void disableStatic(int stripID){
-
-  if(stripID==1){
-    if(staticColor==true){
-      staticColor=false;
-    }
-    else{
-   
-    }
-  }
-  else if (stripID==2){
-      if(staticColor2==true){
-      staticColor2=false;
-    }
-    else{
-   
-    }
-    }
-}
-  
   
 void setup() {
   Serial.begin(115200);
@@ -346,11 +301,10 @@ void setAll(byte red, byte green, byte blue,int stripID) {
 
 void staticColorEffect(int r,int g, int b,int stripID){
   if(stripID==1){
-    if(staticColor==true)
+
   setAll(r,g,b,stripID);
-    }
+  }
   else if(stripID==2){
-    if(staticColor2==true)
   setAll(r,g,b,stripID);
     }
   
@@ -381,18 +335,23 @@ void rainbowCycleS(int SpeedDelay,int stripID) {
 
     for(i=0; i< numberLeds; i++) {
       c=Wheel(((i * 256 / numberLeds) + cont) & 255);
-      setPixel(i, *c, *(c+1), *(c+2),stripID);
+      setPixel(i, *c, *(c+1), *(c+2) ,stripID);
   
     }
    
     contTempo=0;
+    cont++;
+    if (cont>256*5){
+      cont = 0;
+      }
     if(stripID==1){
       contTempo1=contTempo;
-      contJ1++;
+      contJ1=cont;
+      
     }
     if(stripID==2){
       contTempo2=contTempo;
-      contJ2++;
+      contJ2=cont;
     }
     
     showStrip(stripID);
