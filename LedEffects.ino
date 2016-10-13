@@ -2,7 +2,7 @@
 #include <Thread.h>
 #include <ThreadController.h>
 #define PIN 0
-#define NUM_LEDS 35
+#define NUM_LEDS 10
 #define PIN2 2
 #define NUM_LEDS2 50
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
@@ -39,7 +39,7 @@ if (Serial.available() > 0) {
 
   //É UM DISPOSITIVO COLOREYEZE?
     if(recivedDataStr.indexOf("$")>=0){
-      Serial.println("Coloreyeze Device PC");
+      Serial.println("WAVE DEVICE");
       
     }
     
@@ -385,6 +385,7 @@ byte * Wheel(byte WheelPos) {
 }
 
 //EFEITO PULSE
+
 void FadeInOut(byte red, byte green, byte blue,int SpeedDelay,int stripID){
   float r, g, b;
   boolean verif;
@@ -402,6 +403,7 @@ void FadeInOut(byte red, byte green, byte blue,int SpeedDelay,int stripID){
     contTempo=contTempo2;
     contTempo2++;
     }
+
   if (contTempo >= SpeedDelay){
     if (verif==true){
       if(cont<256){
@@ -409,12 +411,11 @@ void FadeInOut(byte red, byte green, byte blue,int SpeedDelay,int stripID){
         g = (cont/256.0)*green;
         b = (cont/256.0)*blue;
         setAll(r,g,b,stripID);
-        showStrip(stripID);
         if(cont==255){
           verif=false;
           }
         else{
-           cont++;
+           cont=cont+15;
           }
         }
     }
@@ -423,12 +424,11 @@ void FadeInOut(byte red, byte green, byte blue,int SpeedDelay,int stripID){
       g = (cont/256.0)*green;
       b = (cont/256.0)*blue;
       setAll(r,g,b,stripID);
-      showStrip(stripID);
       if(cont==0){
         verif=true;
         }
       else{
-          cont--;
+          cont=cont-15;
         }
     }
     contTempo=0;
